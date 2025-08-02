@@ -1,0 +1,12 @@
+[project]
+name = "pydantic-todo-bot"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "dateparser>=1.2.2",
+    "flask>=3.1.1",
+    "pydantic-ai>=0.4.11",
+    "ruff>=0.12.7",
+]

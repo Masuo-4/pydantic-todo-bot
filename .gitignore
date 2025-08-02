@@ -1,0 +1,51 @@
+# .env ファイル（APIキーなどの秘密情報）
+.env
+
+# SQLite データベースファイル
+db/*.db
+db/*.sqlite3
+
+# Python キャッシュ
+__pycache__/
+*.py[cod]
+*$py.class
+
+# VSCodeなどのエディタ設定
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+
+# ログファイル
+*.log
+
+# Jupyter ノートブックのチェックポイント
+.ipynb_checkpoints
+
+# バーチャル環境（venv, .env, etc.）
+venv/
+.env/
+env/
+.venv/
+
+# Pipenv
+Pipfile.lock
+
+# Poetry
+poetry.lock
+
+# pyright / mypy
+.mypy_cache/
+.pyright/
+
+# Ruffなどのツールキャッシュ
+.cache/
+
+# Pydantic-AIのキャッシュ（該当する場合）
+.pydantic_ai/
+
+# ローカル実行で生成される一時ファイル
+*.tmp
+*.bak
+*.swp
