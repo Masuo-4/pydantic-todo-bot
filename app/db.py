@@ -1,5 +1,6 @@
 import sqlite3
 from typing import List, Dict
+from datetime import datetime
 
 DB_FILE = "db/tasks.db"
 
@@ -21,10 +22,7 @@ def init_db():
 def save_task(title: str, due_date: str, details: str):
     conn = sqlite3.connect(DB_FILE)
     cur = conn.cursor()
-    cur.execute(
-        "INSERT INTO tasks (title, due_date, details) VALUES (?, ?, ?)",
-        (title, due_date, details),
-    )
+    cur.execute("INSERT INTO tasks (title, due_date, details) VALUES (?, ?, ?)", (title, due_date, details))
     conn.commit()
     conn.close()
 
@@ -37,15 +35,12 @@ def get_all_tasks(sort: str = "due") -> List[Dict]:
     elif sort == "created_asc":
         order = "created_at ASC"
     else:
-        order = "due_date IS NULL, due_date ASC"  # NULLは最後に
+        order = "due_date IS NULL, due_date ASC"
 
-    cur.execute(f"""
-        SELECT id, title, due_date, details, created_at FROM tasks ORDER BY {order}
-    """)
+    cur.execute(f"SELECT id, title, due_date, details, created_at FROM tasks ORDER BY {order}")
     rows = cur.fetchall()
     conn.close()
 
-    from datetime import datetime
     return [
         {
             "id": r[0],

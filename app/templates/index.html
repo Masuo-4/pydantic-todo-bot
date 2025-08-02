@@ -15,42 +15,30 @@
       color: #333;
     }
 
-    h1,
-    h2 {
-      color: #2c3e50;
-    }
-
     .task {
       background: #fff;
       margin-bottom: 0.5rem;
       padding: 0.5rem 0.8rem;
       border-left: 4px solid #3498db;
       border-radius: 4px;
-      line-height: 1.4;
       display: flex;
       justify-content: space-between;
       align-items: center;
+    }
+
+    .task.expired {
+      opacity: 0.6;
+      border-left-color: #e74c3c;
     }
 
     .task-info {
       flex-grow: 1;
     }
 
-    .task strong {
-      font-size: 1rem;
-      display: inline-block;
-      margin-right: 0.5rem;
-    }
-
-    .task small {
-      color: #666;
-      font-size: 0.85rem;
-    }
-
     .task-details {
       font-size: 0.9rem;
       color: #444;
-      margin-top: 2px;
+      margin-top: 4px;
     }
 
     .task-details a {
@@ -68,54 +56,33 @@
       cursor: pointer;
     }
 
-    form textarea {
-      width: 100%;
-      padding: 0.6rem;
-      font-size: 1rem;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-    }
-
-    form button {
-      background-color: #3498db;
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 4px;
-      font-size: 1rem;
-      margin-top: 0.5rem;
-      cursor: pointer;
-    }
-
-    form button:disabled {
-      background-color: #95a5a6;
-      cursor: not-allowed;
+    select {
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
     }
   </style>
-  <script>
-    function disableButton() {
-      const button = document.getElementById("submit-btn");
-      button.disabled = true;
-      button.innerText = "送信中...";
-    }
-  </script>
 </head>
 
 <body>
   <h1>📋 タスク一覧</h1>
-  <form method="get" action="/" style="margin-bottom: 1rem;">
+
+  <form method="get" action="/">
     <label for="sort">ソート順：</label>
-    <select name="sort" id="sort" onchange="this.form.submit()">
-      <option value="due" {% if sort=="due" %}selected{% endif %}>締切が近い順</option>
+    <select name="sort" onchange="this.form.submit()">
+      <option value="due" {% if sort=="due" %}selected{% endif %}>締切順</option>
       <option value="created" {% if sort=="created" %}selected{% endif %}>追加順（新→古）</option>
       <option value="created_asc" {% if sort=="created_asc" %}selected{% endif %}>追加順（古→新）</option>
     </select>
-    </form>
+  </form>
+
   {% for task in tasks %}
-  <div class="task">
+  <div class="task {% if task.is_expired %}expired{% endif %}">
     <div class="task-info">
       <strong>{{ task.title }}</strong>
-      <small>（期限: {{ task.due_date or '未設定' }}）</small><br />
+      <small>（期限: {{ task.due_date or '未設定' }}）</small>
+      {% if task.is_expired %}
+      <span style="color:red; font-weight: bold;">[期限切れ]</span>
+      {% endif %}
       {% if task.details %}
       <div class="task-details">{{ task.details | safe }}</div>
       {% endif %}
@@ -130,10 +97,9 @@
 
   <hr />
   <h2>➕ タスク追加</h2>
-  <form method="post" action="/add" onsubmit="disableButton()">
-    <label for="text">自然文でタスクを入力:</label><br />
-    <textarea name="text" id="text" rows="3" required></textarea><br />
-    <button type="submit" id="submit-btn">タスクを追加</button>
+  <form method="post" action="/add">
+    <textarea name="text" rows="3" style="width:100%;" placeholder="例: 火曜までに会議資料を作る"></textarea><br />
+    <button type="submit">タスクを追加</button>
   </form>
 </body>
 
