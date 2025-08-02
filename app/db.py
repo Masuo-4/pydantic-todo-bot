@@ -3,7 +3,6 @@ from typing import List, Dict
 
 DB_FILE = "db/tasks.db"
 
-
 def init_db():
     conn = sqlite3.connect(DB_FILE)
     cur = conn.cursor()
@@ -19,7 +18,6 @@ def init_db():
     conn.commit()
     conn.close()
 
-
 def save_task(title: str, due_date: str, details: str):
     conn = sqlite3.connect(DB_FILE)
     cur = conn.cursor()
@@ -30,15 +28,24 @@ def save_task(title: str, due_date: str, details: str):
     conn.commit()
     conn.close()
 
-
-def get_all_tasks() -> List[Dict]:
+def get_all_tasks(sort: str = "due") -> List[Dict]:
     conn = sqlite3.connect(DB_FILE)
     cur = conn.cursor()
-    cur.execute(
-        "SELECT id, title, due_date, details, created_at FROM tasks ORDER BY due_date"
-    )
+
+    if sort == "created":
+        order = "created_at DESC"
+    elif sort == "created_asc":
+        order = "created_at ASC"
+    else:
+        order = "due_date IS NULL, due_date ASC"  # NULLは最後に
+
+    cur.execute(f"""
+        SELECT id, title, due_date, details, created_at FROM tasks ORDER BY {order}
+    """)
     rows = cur.fetchall()
     conn.close()
+
+    from datetime import datetime
     return [
         {
             "id": r[0],
@@ -46,6 +53,14 @@ def get_all_tasks() -> List[Dict]:
             "due_date": r[2],
             "details": r[3],
             "created_at": r[4],
+            "is_expired": bool(r[2]) and datetime.now() > datetime.strptime(r[2], "%Y-%m-%d %H:%M")
         }
         for r in rows
     ]
+
+def delete_task(task_id: int):
+    conn = sqlite3.connect(DB_FILE)
+    cur = conn.cursor()
+    cur.execute("DELETE FROM tasks WHERE id = ?", (task_id,))
+    conn.commit()
+    conn.close()

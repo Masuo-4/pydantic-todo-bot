@@ -27,6 +27,13 @@
       border-left: 4px solid #3498db;
       border-radius: 4px;
       line-height: 1.4;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .task-info {
+      flex-grow: 1;
     }
 
     .task strong {
@@ -44,6 +51,21 @@
       font-size: 0.9rem;
       color: #444;
       margin-top: 2px;
+    }
+
+    .task-details a {
+      color: #2980b9;
+      text-decoration: underline;
+    }
+
+    .done-btn {
+      background-color: #27ae60;
+      color: white;
+      border: none;
+      padding: 0.3rem 0.6rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      cursor: pointer;
     }
 
     form textarea {
@@ -81,13 +103,26 @@
 
 <body>
   <h1>📋 タスク一覧</h1>
+  <form method="get" action="/" style="margin-bottom: 1rem;">
+    <label for="sort">ソート順：</label>
+    <select name="sort" id="sort" onchange="this.form.submit()">
+      <option value="due" {% if sort=="due" %}selected{% endif %}>締切が近い順</option>
+      <option value="created" {% if sort=="created" %}selected{% endif %}>追加順（新→古）</option>
+      <option value="created_asc" {% if sort=="created_asc" %}selected{% endif %}>追加順（古→新）</option>
+    </select>
+    </form>
   {% for task in tasks %}
   <div class="task">
-    <strong>{{ task.title }}</strong>
-    <small>（期限: {{ task.due_date or '未設定' }}）</small><br />
-    {% if task.details %}
-    <div class="task-details">{{ task.details }}</div>
-    {% endif %}
+    <div class="task-info">
+      <strong>{{ task.title }}</strong>
+      <small>（期限: {{ task.due_date or '未設定' }}）</small><br />
+      {% if task.details %}
+      <div class="task-details">{{ task.details | safe }}</div>
+      {% endif %}
+    </div>
+    <form method="post" action="/done/{{ task.id }}">
+      <button type="submit" class="done-btn">完了</button>
+    </form>
   </div>
   {% else %}
   <p>タスクはまだありません。</p>
